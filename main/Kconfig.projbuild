@@ -1,0 +1,47 @@
+menu "heating_controller Configuration"
+
+config ONE_WIRE_GPIO
+    int "OneWire GPIO number"
+	range 0 34
+	default 16
+	help
+		GPIO number (IOxx) to access One Wire Bus.
+
+		Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used.
+
+		GPIOs 35-39 are input-only so cannot be used to drive the One Wire Bus.
+config RELAIS1_GPIO
+    int "RELAIS1 GPIO number"
+	range 0 34
+	default 25
+config RELAIS2_GPIO
+    int "RELAIS2 GPIO number"
+	range 0 34
+	default 26
+config PWM_IN_GPIO
+    int "PWM In GPIO number"
+	range 0 34
+	default 22
+config PWM_OUT_GPIO
+    int "PWM Out GPIO number"
+	range 0 34
+	default 23
+
+config WIFI_SSID
+    string "WIFI SSID"
+config WIFI_PASSWORD
+    string "WIFI Password"
+
+config MQTT_SERVER
+    string "MQTT Server (IP)"
+config MQTT_PORT
+    int "MQTT Port"
+    default 1883
+config MQTT_ID
+    string "MQTT Client ID"
+config MQTT_USER
+    string "MQTT User"
+config MQTT_PASSWORD
+    string "MQTT Passowrd"
+
+endmenu
