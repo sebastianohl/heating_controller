@@ -59,7 +59,7 @@ void temperatureSensors_trigger_read(temperatureSensors_handle *handle)
     ds18b20_wait_for_conversion(handle->devices[0].info);
 }
 
-float temperatureSensors_read_temperature(temperatureSensors_handle *handle,
+float temperatureSensors_read_temperature_idx(temperatureSensors_handle *handle,
                                           uint8_t sensor)
 {
     assert(sensor < handle->num_devices);
@@ -67,4 +67,17 @@ float temperatureSensors_read_temperature(temperatureSensors_handle *handle,
     ds18b20_read_temp(handle->devices[sensor].info, &temp);
 
     return temp;
+}
+
+float temperatureSensors_read_temperature_str(temperatureSensors_handle *handle,
+                                          device_rom_code_t sensor)
+{
+	for (int i = 0; i < handle->num_devices; ++i)
+	{
+		if (strcmp(handle->devices[i].device_rom_code_str, sensor) == 0)
+		{
+			return temperatureSensors_read_temperature_idx(handle, i);
+		}
+	}
+	return 666;
 }

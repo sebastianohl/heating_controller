@@ -130,6 +130,14 @@ void homie_init(homie_handle_t *handle)
             };
             esp_mqtt_client_publish(handle->mqtt_client, buf_topic, buf_value,
                                     strlen(buf_value), 1, 1);
+
+            if (prop->settable == HOMIE_TRUE)
+            {
+            	sprintf(buf_topic, "homie/%s/%s/%s/set", handle->deviceid,
+                                node->id, prop->id);
+            	printf("subscribe to %s\n", buf_topic);
+            	esp_mqtt_client_subscribe(handle->mqtt_client, buf_topic, 1);
+            }
         }
     }
 }
@@ -146,13 +154,20 @@ void homie_cycle(homie_handle_t *handle)
     esp_mqtt_client_publish(handle->mqtt_client, buf_topic, buf_value,
                             strlen(buf_value), 1, 1);
 
-    for (int i = 0; i < handle->num_nodes; ++i)
+    for (int n = 0; n < handle->num_nodes; ++n)
     {
-        for (int j = 0; j < handle->nodes[i].num_properties; ++j)
+    	const homie_node_t *const node = &handle->nodes[n];
+    	for (int p = 0; p < node->num_properties; ++p)
         {
-            handle->nodes[i].properties[j].update_property_cbk(handle, i, j);
+        	const homie_node_property_t *const prop = &node->properties[p];
+            if (prop->read_property_cbk) prop->read_property_cbk(handle, n, p);
         }
     }
+}
+
+void homie_handle_mqtt_incoming_event(homie_handle_t *handle, esp_mqtt_event_handle_t event)
+{
+
 }
 
 void homie_publish_property_value(homie_handle_t *handle, int node,

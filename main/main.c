@@ -16,6 +16,7 @@
 
 #include "homie.h"
 #include "temperatureSensors.h"
+#include "controller.h"
 
 static EventGroupHandle_t wifi_event_group;
 static EventGroupHandle_t mqtt_event_group;
@@ -24,20 +25,27 @@ static esp_mqtt_client_handle_t mqtt_client = NULL;
 const static int MQTT_CONNECTED_BIT = BIT0;
 
 temperatureSensors_handle *temperatureSensors;
+controller_handle_t *controller;
 
 void update_temperatur_sensor(struct homie_handle_s *handle, int node,
                               int property);
+void update_target_flow_temperature(struct homie_handle_s *handle, int node,
+                              int property);
+void receive_target_flow_temperature(struct homie_handle_s *handle, int node,
+                                int property, const char *data);
+
+const device_rom_code_t inflow_floor_heating_sensor = "4001144fe10daa28";
 
 homie_handle_t homie = {
     .deviceid = "heating-controller",
     .devicename = "Heating Controller",
     .update_interval =
         0, /* set to 0 to workaround openhab problem of taking device offline */
-    .num_nodes = 4,
+    .num_nodes = 2,
     .nodes =
         {
-            {.id = "tempsensor1",
-             .name = "Temperature Sensor 1",
+            {.id = "inflow-floor-heating",
+             .name = "Inflow Floor Heating",
              .type = "ds18b20",
              .num_properties = 1,
              .properties =
@@ -49,12 +57,12 @@ homie_handle_t homie = {
                          .retained = HOMIE_TRUE,
                          .unit = "°C",
                          .datatype = HOMIE_FLOAT,
-                         .user_data = (void *)0,
-                         .update_property_cbk = &update_temperatur_sensor,
+                         .user_data = (void *)&inflow_floor_heating_sensor,
+                         .read_property_cbk = &update_temperatur_sensor,
                      },
                  }},
-            {.id = "tempsensor2",
-             .name = "Temperature Sensor 2",
+/*            {.id = "returnflow-floor-heating",
+             .name = "Return flow floor heating",
              .type = "ds18b20",
              .num_properties = 1,
              .properties =
@@ -67,11 +75,11 @@ homie_handle_t homie = {
                          .unit = "°C",
                          .datatype = HOMIE_FLOAT,
                          .user_data = (void *)1,
-                         .update_property_cbk = &update_temperatur_sensor,
+                         .read_property_cbk = &update_temperatur_sensor,
                      },
                  }},
-            {.id = "tempsensor3",
-             .name = "Temperature Sensor 3",
+            {.id = "inflow-heater",
+             .name = "Inflow Heater",
              .type = "ds18b20",
              .num_properties = 1,
              .properties =
@@ -84,11 +92,11 @@ homie_handle_t homie = {
                          .unit = "°C",
                          .datatype = HOMIE_FLOAT,
                          .user_data = (void *)2,
-                         .update_property_cbk = &update_temperatur_sensor,
+                         .read_property_cbk = &update_temperatur_sensor,
                      },
                  }},
-            {.id = "tempsensor4",
-             .name = "Temperature Sensor 4",
+            {.id = "returnflow-heater",
+             .name = "Return flow heater",
              .type = "ds18b20",
              .num_properties = 1,
              .properties =
@@ -101,9 +109,35 @@ homie_handle_t homie = {
                          .unit = "°C",
                          .datatype = HOMIE_FLOAT,
                          .user_data = (void *)3,
-                         .update_property_cbk = &update_temperatur_sensor,
+                         .read_property_cbk = &update_temperatur_sensor,
                      },
-                 }},
+                 }},*/
+		            {.id = "flow-temperature-controller",
+		             .name = "Flow Temperature Controller",
+		             .type = "3-point-output",
+		             .num_properties = 1,
+		             .properties =
+		                 {
+		                     {
+		                         .id = "target-flow-temperature",
+		                         .name = "Target Flow Temperature",
+		                         .settable = HOMIE_TRUE,
+		                         .retained = HOMIE_TRUE,
+		                         .unit = "°C",
+		                         .datatype = HOMIE_FLOAT,
+		                         .read_property_cbk = &update_target_flow_temperature,
+		                         .write_property_cbk = &receive_target_flow_temperature,
+		                     },
+/*		                     {
+		                         .id = "valve-position",
+		                         .name = "Valve Position",
+		                         .settable = HOMIE_FALSE,
+		                         .retained = HOMIE_TRUE,
+		                         .unit = "s",
+		                         .datatype = HOMIE_FLOAT,
+		                         //.update_property_cbk = &receive_target_flow_temperature,
+		                     },*/
+		                 }},
         },
     .uptime = 0,
 };
@@ -148,6 +182,9 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
         printf("ID=%d, total_len=%d, data_len=%d, current_data_offset=%d\n",
                event->msg_id, event->total_data_len, event->data_len,
                event->current_data_offset);
+
+        homie_handle_mqtt_incoming_event(&homie, event);
+
         /*
             if (event->topic) {
                 actual_len = event->data_len;
@@ -275,13 +312,25 @@ void update_temperatur_sensor(struct homie_handle_s *handle, int node,
                               int property)
 {
     char value[100];
-    float temp = temperatureSensors_read_temperature(
+    float temp = temperatureSensors_read_temperature_str(
         temperatureSensors,
-        (int)handle->nodes[node].properties[property].user_data);
+        *((device_rom_code_t*)handle->nodes[node].properties[property].user_data));
     printf("temp %d: %.2f\n",
            (int)handle->nodes[node].properties[property].user_data, temp);
     sprintf(value, "%.2f", temp);
     homie_publish_property_value(handle, node, property, value);
+}
+
+void update_target_flow_temperature(struct homie_handle_s *handle, int node,
+                              int property)
+{
+    homie_publish_property_value(handle, node, property, "21");
+}
+
+void receive_target_flow_temperature(struct homie_handle_s *handle, int node,
+                                int property, const char *data)
+{
+	printf("got value %s\n", data);
 }
 
 void app_main(void)
@@ -310,29 +359,24 @@ void app_main(void)
                         portMAX_DELAY);
 
     temperatureSensors = temperatureSensors_init(&mqtt_client);
+    controller = controller_init(temperatureSensors, CONFIG_RELAIS1_GPIO, CONFIG_RELAIS2_GPIO, inflow_floor_heating_sensor, 2.0, 50, 20, 24, 20, 10);
 
     homie.mqtt_client = mqtt_client;
 
     homie_init(&homie);
 
-    /*
-    gpio_pad_select_gpio(CONFIG_RELAIS1_GPIO);
-    gpio_pad_select_gpio(CONFIG_RELAIS2_GPIO);
-    gpio_set_direction(CONFIG_RELAIS1_GPIO, GPIO_MODE_OUTPUT);
-    gpio_set_direction(CONFIG_RELAIS2_GPIO, GPIO_MODE_OUTPUT);
-     */
+
     for (int i = 100; i >= 0; i--)
     {
         printf("Restarting in %d seconds...\n", i * 80);
-
-        // gpio_set_level(CONFIG_RELAIS1_GPIO, i % 2);
-        // gpio_set_level(CONFIG_RELAIS2_GPIO, i % 2);
 
         temperatureSensors_trigger_read(temperatureSensors);
 
         homie.uptime += 8;
 
         homie_cycle(&homie);
+
+        controller_cycle(controller);
         vTaskDelay(8000 / portTICK_PERIOD_MS);
     }
     printf("Restarting now.\n");

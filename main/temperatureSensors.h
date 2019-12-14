@@ -7,11 +7,13 @@
 
 #define TEMPERATURE_SENSORS_MAX_DEV (4)
 
+typedef char device_rom_code_t[17];
+
 typedef struct
 {
     DS18B20_Info *info;
     OneWireBus_ROMCode device_rom_code;
-    char device_rom_code_str[17];
+    device_rom_code_t device_rom_code_str;
 } temperatureSensors_sensor;
 
 typedef struct
@@ -24,7 +26,9 @@ typedef struct
 
 temperatureSensors_handle *temperatureSensors_init();
 void temperatureSensors_trigger_read(temperatureSensors_handle *handle);
-float temperatureSensors_read_temperature(temperatureSensors_handle *handle,
+float temperatureSensors_read_temperature_idx(temperatureSensors_handle *handle,
                                           uint8_t sensor);
+float temperatureSensors_read_temperature_str(temperatureSensors_handle *handle,
+                                          device_rom_code_t sensor);
 
 #endif
