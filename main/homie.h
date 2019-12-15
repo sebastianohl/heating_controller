@@ -5,7 +5,7 @@
 
 #define HOMIE_MAX_STRLEN (50)
 #define HOMIE_MAX_NODES (5)
-#define HOMIE_MAX_NODES_PROPERTIES (5)
+#define HOMIE_MAX_NODES_PROPERTIES (10)
 
 #define HOMIE_TRUE (1)
 #define HOMIE_FALSE (0)

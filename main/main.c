@@ -34,6 +34,32 @@ void update_target_flow_temperature(struct homie_handle_s *handle, int node,
 void receive_target_flow_temperature(struct homie_handle_s *handle, int node,
                                 int property, const char *data);
 
+void receive_controller_setpoint_temperature(struct homie_handle_s *handle, int node,
+        int property, const char *data);
+void update_controller_setpoint_temperature(struct homie_handle_s *handle, int node,
+        int property);
+void receive_controller_hysteresis(struct homie_handle_s *handle, int node,
+        int property, const char *data);
+void update_controller_hysteresis(struct homie_handle_s *handle, int node,
+        int property);
+void receive_controller_emergency(struct homie_handle_s *handle, int node,
+        int property, const char *data);
+void update_controller_emergency(struct homie_handle_s *handle, int node,
+        int property);
+void receive_controller_reaction_time(struct homie_handle_s *handle, int node,
+        int property, const char *data);
+void update_controller_reaction_time(struct homie_handle_s *handle, int node,
+        int property);
+void receive_controller_step_time(struct homie_handle_s *handle, int node,
+        int property, const char *data);
+void update_controller_step_time(struct homie_handle_s *handle, int node,
+        int property);
+void update_controller_current_value(struct homie_handle_s *handle, int node,
+        int property);
+void update_controller_state(struct homie_handle_s *handle, int node,
+        int property);
+
+
 const device_rom_code_t inflow_floor_heating_sensor = "4001144fe10daa28";
 
 homie_handle_t homie = {
@@ -115,28 +141,77 @@ homie_handle_t homie = {
 		            {.id = "flow-temperature-controller",
 		             .name = "Flow Temperature Controller",
 		             .type = "3-point-output",
-		             .num_properties = 1,
+		             .num_properties = 7,
 		             .properties =
 		                 {
 		                     {
-		                         .id = "target-flow-temperature",
-		                         .name = "Target Flow Temperature",
+		                         .id = "setpoint-temperature",
+		                         .name = "Set Point Temperature",
 		                         .settable = HOMIE_TRUE,
 		                         .retained = HOMIE_TRUE,
 		                         .unit = "°C",
 		                         .datatype = HOMIE_FLOAT,
-		                         .read_property_cbk = &update_target_flow_temperature,
-		                         .write_property_cbk = &receive_target_flow_temperature,
+		                         .read_property_cbk = &update_controller_setpoint_temperature,
+		                         .write_property_cbk = &receive_controller_setpoint_temperature,
 		                     },
-/*		                     {
-		                         .id = "valve-position",
-		                         .name = "Valve Position",
+		                     {
+		                         .id = "hystersis",
+		                         .name = "Hysteresis",
+		                         .settable = HOMIE_TRUE,
+		                         .retained = HOMIE_TRUE,
+		                         .unit = "°C",
+		                         .datatype = HOMIE_FLOAT,
+		                         .read_property_cbk = &update_controller_hysteresis,
+		                         .write_property_cbk = &receive_controller_hysteresis,
+		                     },
+		                     {
+		                         .id = "emergency",
+		                         .name = "Emergency Temperature",
+		                         .settable = HOMIE_TRUE,
+		                         .retained = HOMIE_TRUE,
+		                         .unit = "°C",
+		                         .datatype = HOMIE_FLOAT,
+		                         .read_property_cbk = &update_controller_emergency,
+		                         .write_property_cbk = &receive_controller_emergency,
+		                     },
+		                     {
+		                         .id = "reaction-time",
+		                         .name = "Reaction Time",
+		                         .settable = HOMIE_TRUE,
+		                         .retained = HOMIE_TRUE,
+		                         .unit = "s",
+		                         .datatype = HOMIE_FLOAT,
+		                         .read_property_cbk = &update_controller_reaction_time,
+		                         .write_property_cbk = &receive_controller_reaction_time,
+		                     },
+		                     {
+		                         .id = "step-time",
+		                         .name = "Step Time",
+		                         .settable = HOMIE_TRUE,
+		                         .retained = HOMIE_TRUE,
+		                         .unit = "s",
+		                         .datatype = HOMIE_FLOAT,
+		                         .read_property_cbk = &update_controller_step_time,
+		                         .write_property_cbk = &receive_controller_step_time,
+		                     },
+		                     {
+		                         .id = "current-value",
+		                         .name = "Current Value",
 		                         .settable = HOMIE_FALSE,
 		                         .retained = HOMIE_TRUE,
 		                         .unit = "s",
 		                         .datatype = HOMIE_FLOAT,
-		                         //.update_property_cbk = &receive_target_flow_temperature,
-		                     },*/
+		                         .read_property_cbk = &update_controller_current_value,
+		                     },
+		                     {
+		                         .id = "state",
+		                         .name = "Current State",
+		                         .settable = HOMIE_FALSE,
+		                         .retained = HOMIE_TRUE,
+		                         .unit = "enum",
+		                         .datatype = HOMIE_FLOAT,
+		                         .read_property_cbk = &update_controller_state,
+		                     }
 		                 }},
         },
     .uptime = 0,
@@ -148,16 +223,11 @@ static const char *TAG = "heating_controller";
 
 static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 {
-    // your_context_t *context = event->context;
     switch (event->event_id)
     {
     case MQTT_EVENT_CONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
         xEventGroupSetBits(mqtt_event_group, MQTT_CONNECTED_BIT);
-        // msg_id = esp_mqtt_client_subscribe(client,
-        // CONFIG_EXAMPLE_SUBSCIBE_TOPIC, qos_test); ESP_LOGI(TAG, "sent
-        // subscribe successful, msg_id=%d", msg_id);
-
         break;
     case MQTT_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -173,9 +243,6 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
         ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
         break;
     case MQTT_EVENT_DATA:
-        // esp_mqtt_client_handle_t client = event->client;
-        // int msg_id = 0;
-        // int actual_len = 0;
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
         printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
         printf("DATA=%.*s\r\n", event->data_len, event->data);
@@ -185,31 +252,6 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 
         homie_handle_mqtt_incoming_event(&homie, event);
 
-        /*
-            if (event->topic) {
-                actual_len = event->data_len;
-                msg_id = event->msg_id;
-            } else {
-                actual_len += event->data_len;
-                // check consisency with msg_id across multiple data events for
-           single msg if (msg_id != event->msg_id) { ESP_LOGI(TAG, "Wrong msg_id
-           in chunked message %d != %d", msg_id, event->msg_id); abort();
-                }
-            }
-            memcpy(actual_data + event->current_data_offset, event->data,
-           event->data_len); if (actual_len == event->total_data_len) { if (0 ==
-           memcmp(actual_data, expected_data, expected_size)) { printf("OK!");
-                    memset(actual_data, 0, expected_size);
-                    actual_published ++;
-                    if (actual_published == expected_published) {
-                        printf("Correct pattern received exactly x times\n");
-                        ESP_LOGI(TAG, "Test finished correctly!");
-                    }
-                } else {
-                    printf("FAILED!");
-                    abort();
-                }
-            }*/
         break;
     case MQTT_EVENT_ERROR:
         ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -321,16 +363,84 @@ void update_temperatur_sensor(struct homie_handle_s *handle, int node,
     homie_publish_property_value(handle, node, property, value);
 }
 
-void update_target_flow_temperature(struct homie_handle_s *handle, int node,
+void update_controller_setpoint_temperature(struct homie_handle_s *handle, int node,
                               int property)
 {
-    homie_publish_property_value(handle, node, property, "21");
+    char value[100];
+    sprintf(value, "%.2f", controller->setpoint);
+    homie_publish_property_value(handle, node, property, value);
 }
-
-void receive_target_flow_temperature(struct homie_handle_s *handle, int node,
-                                int property, const char *data)
+void receive_controller_setpoint_temperature(struct homie_handle_s *handle, int node,
+        int property, const char *data)
 {
-	printf("got value %s\n", data);
+	sscanf(data, "%f", &controller->setpoint);
+	printf("new setpoint %.2f\n", controller->setpoint);
+}
+void receive_controller_hysteresis(struct homie_handle_s *handle, int node,
+        int property, const char *data)
+{
+	sscanf(data, "%f", &controller->hysteresis);
+	printf("new hysteresis %.2f\n", controller->hysteresis);
+}
+void update_controller_hysteresis(struct homie_handle_s *handle, int node,
+                              int property)
+{
+    char value[100];
+    sprintf(value, "%.2f", controller->hysteresis);
+    homie_publish_property_value(handle, node, property, value);
+}
+void receive_controller_emergency(struct homie_handle_s *handle, int node,
+        int property, const char *data)
+{
+	sscanf(data, "%f", &controller->emergency);
+	printf("new emergency value %.2f\n", controller->emergency);
+}
+void update_controller_emergency(struct homie_handle_s *handle, int node,
+                              int property)
+{
+    char value[100];
+    sprintf(value, "%.2f", controller->emergency);
+    homie_publish_property_value(handle, node, property, value);
+}
+void receive_controller_reaction_time(struct homie_handle_s *handle, int node,
+        int property, const char *data)
+{
+	sscanf(data, "%f", &controller->reaction_time);
+	printf("new reaction time %.2f\n", controller->reaction_time);
+}
+void update_controller_reaction_time(struct homie_handle_s *handle, int node,
+                              int property)
+{
+    char value[100];
+    sprintf(value, "%.2f", controller->reaction_time);
+    homie_publish_property_value(handle, node, property, value);
+}
+void receive_controller_step_time(struct homie_handle_s *handle, int node,
+        int property, const char *data)
+{
+	sscanf(data, "%f", &controller->step_time);
+	printf("new step time %.2f\n", controller->step_time);
+}
+void update_controller_step_time(struct homie_handle_s *handle, int node,
+                              int property)
+{
+    char value[100];
+    sprintf(value, "%.2f", controller->step_time);
+    homie_publish_property_value(handle, node, property, value);
+}
+void update_controller_current_value(struct homie_handle_s *handle, int node,
+        int property)
+{
+    char value[100];
+    sprintf(value, "%.2f", controller->current_value);
+    homie_publish_property_value(handle, node, property, value);
+}
+void update_controller_state(struct homie_handle_s *handle, int node,
+        int property)
+{
+    char value[100];
+    sprintf(value, "%d", controller->state);
+    homie_publish_property_value(handle, node, property, value);
 }
 
 void app_main(void)
@@ -359,7 +469,14 @@ void app_main(void)
                         portMAX_DELAY);
 
     temperatureSensors = temperatureSensors_init(&mqtt_client);
-    controller = controller_init(temperatureSensors, CONFIG_RELAIS1_GPIO, CONFIG_RELAIS2_GPIO, inflow_floor_heating_sensor, 2.0, 50, 20, 24, 20, 10);
+    controller = controller_init(temperatureSensors, CONFIG_RELAIS1_GPIO, CONFIG_RELAIS2_GPIO,
+    		inflow_floor_heating_sensor,
+			2.0,
+			50,
+			20,
+			24,
+			20,
+			10);
 
     homie.mqtt_client = mqtt_client;
 

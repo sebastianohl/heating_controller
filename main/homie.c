@@ -167,7 +167,29 @@ void homie_cycle(homie_handle_t *handle)
 
 void homie_handle_mqtt_incoming_event(homie_handle_t *handle, esp_mqtt_event_handle_t event)
 {
-
+	char * pch = strtok (event->topic," /");
+	if (pch == NULL || strcmp(pch, "homie") != 0) return;
+	pch = strtok (NULL, "/");
+	if (pch == NULL || strcmp(pch, handle->deviceid) != 0) return;
+	pch = strtok (NULL, "/");
+	if (pch == NULL) return;
+	for (int n = 0; n < handle->num_nodes; ++n)
+	{
+		const homie_node_t *const node = &handle->nodes[n];
+		if (strcmp(pch, node->id) == 0)
+		{
+			pch = strtok (NULL, "/");
+			if (pch == NULL) return;
+			for (int p = 0; p < node->num_properties; ++p)
+			{
+				const homie_node_property_t *const prop = &node->properties[p];
+				if (strcmp(pch, prop->id) == 0)
+				{
+					if (prop->write_property_cbk) prop->write_property_cbk(handle, n, p, event->data);
+				}
+			}
+		}
+	}
 }
 
 void homie_publish_property_value(homie_handle_t *handle, int node,
