@@ -185,7 +185,7 @@ void homie_handle_mqtt_incoming_event(homie_handle_t *handle, esp_mqtt_event_han
 				const homie_node_property_t *const prop = &node->properties[p];
 				if (strcmp(pch, prop->id) == 0)
 				{
-					if (prop->write_property_cbk) prop->write_property_cbk(handle, n, p, event->data);
+					if (prop->write_property_cbk) prop->write_property_cbk(handle, n, p, event->data, event->data_len);
 				}
 			}
 		}

@@ -58,14 +58,14 @@ void controller_reset(controller_handle_t *handle)
 }
 
 controller_handle_t * controller_init(temperatureSensors_handle *temperatureSensors, uint8_t open_flow_pin,
-		uint8_t close_flow_pin, device_rom_code_t const inflow_sensor, float hysteresis, float emergancy,
+		uint8_t close_flow_pin, device_rom_code_t const inflow_sensor, float hysteresis, float emergency,
 		float max_value, float setpoint, float reaction_time, float step_time)
 {
 	controller_handle_t *handle = malloc(sizeof(controller_handle_t));
 	memset(handle, 0, sizeof(controller_handle_t));
 
 	handle->hysteresis = hysteresis;
-	handle->emergency = emergancy;
+	handle->emergency = emergency;
 	handle->max_value = max_value;
 	handle->setpoint = setpoint;
 	handle->reaction_time = reaction_time;
@@ -94,6 +94,7 @@ void controller_cycle(controller_handle_t *handle)
 	float currentTemp = temperatureSensors_read_temperature_str(handle->temperatureSensors, handle->inflow_sensor);
 	printf ("current temp %f\n", currentTemp);
 	printf ("current state %d\n", handle->state);
+	printf ("current setpoint %.2f\n", handle->setpoint);
 
 	if ((xTaskGetTickCount() * portTICK_PERIOD_MS) < handle->last_cycle) /* timer wrap ignore one cycle*/
 	{
@@ -112,11 +113,6 @@ void controller_cycle(controller_handle_t *handle)
 	case CONTROLLER_RESET:
 		{
 			handle->current_value -= (float)timeSinceLast / 1000.0;
-			if (handle->current_value <= 0.0)
-			{
-				handle->current_value = 0;
-				controller_keep_flow(handle);
-			}
 			break;
 		}
 	default: break;
@@ -127,6 +123,8 @@ void controller_cycle(controller_handle_t *handle)
 	printf("current value %f\n", handle->current_value);
 	handle->last_cycle = xTaskGetTickCount() * portTICK_PERIOD_MS;
 
+	printf("last state change %d\n", handle->last_cycle-handle->last_state_change);
+
 	if (currentTemp > handle->emergency)
 	{
 		controller_reset(handle);
@@ -134,7 +132,19 @@ void controller_cycle(controller_handle_t *handle)
 		return;
 	}
 
-	printf("last state change %d\n", handle->last_cycle-handle->last_state_change);
+	if (handle->state == CONTROLLER_RESET)
+	{
+		if (handle->last_cycle-handle->last_state_change > handle->max_value * 1000 * 1.2)
+		{
+			handle->current_value = 0;
+			controller_keep_flow(handle);
+		} else {
+			controller_close_flow(handle);
+			handle->state = CONTROLLER_RESET;
+			return;
+		}
+	}
+
 	if (handle->last_cycle-handle->last_state_change > handle->reaction_time*1000)
 	{
 		printf("error value %f <=> %f\n", currentTemp-handle->setpoint, handle->hysteresis);

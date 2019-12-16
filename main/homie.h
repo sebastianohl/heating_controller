@@ -33,7 +33,7 @@ struct homie_node_property_s
     void (*read_property_cbk)(struct homie_handle_s *handle, int node,
                                 int property);
     void (*write_property_cbk)(struct homie_handle_s *handle, int node,
-                                int property, const char *data);
+                                int property, const char *data, int data_len);
 };
 typedef struct homie_node_property_s homie_node_property_t;
 

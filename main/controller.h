@@ -44,7 +44,7 @@ struct controller_handle_s
 typedef struct controller_handle_s controller_handle_t;
 
 controller_handle_t * controller_init(temperatureSensors_handle *temperatureSensors, uint8_t open_flow_pin,
-		uint8_t close_flow_pin,  device_rom_code_t const inflow_sensor, float hysteresis, float emergancy,
+		uint8_t close_flow_pin,  device_rom_code_t const inflow_sensor, float hysteresis, float emergency,
 		float max_value, float setpoint, float reaction_time, float step_time);
 void controller_cycle(controller_handle_t *handle);
 
