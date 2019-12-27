@@ -47,5 +47,6 @@ controller_handle_t * controller_init(temperatureSensors_handle *temperatureSens
 		uint8_t close_flow_pin,  device_rom_code_t const inflow_sensor, float hysteresis, float emergency,
 		float max_value, float setpoint, float reaction_time, float step_time);
 void controller_cycle(controller_handle_t *handle);
+void controller_reset(controller_handle_t *handle);
 
 #endif /* CONTROLLER_H_ */

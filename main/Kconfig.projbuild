@@ -44,4 +44,32 @@ config MQTT_USER
 config MQTT_PASSWORD
     string "MQTT Passowrd"
 
+config inflow_floor_heating_sensor
+	string "In Flow Floor Heating Sensor Rom Code"
+config returnflow_floor_heating_sensor
+	string "Return Flow Floor Heating Sensor Rom Code"
+config inflow_heater_sensor
+	string "In Flow Header Sensor Rom Code"
+config returnflow_heater_sensor
+	string "Return Flow Heater Sensor Rom Code"
+	
+config controller_hysteresis
+	int "Controller Hysteresis (°C)"
+	default 2
+config controller_emergency_value
+	int "Controller Emergency Value (°C)"
+	default 50
+config controller_max_value
+	int "Controller Actuator Turn time (s)"
+	default 140
+config controller_set_point
+	int "Controller Start Set Point (°C)"
+	default 25
+config controller_reaction_time
+	int "Controller Reaction Time (s)"
+	default 60
+config controller_step_time
+	int "Controller Step Time (s)"
+	default 10
+
 endmenu

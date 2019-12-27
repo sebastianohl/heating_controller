@@ -54,20 +54,27 @@ void receive_controller_step_time(struct homie_handle_s *handle, int node,
         int property, const char *data, int data_len);
 void update_controller_step_time(struct homie_handle_s *handle, int node,
         int property);
+void receive_controller_max_value(struct homie_handle_s *handle, int node,
+        int property, const char *data, int data_len);
+void update_controller_max_value(struct homie_handle_s *handle, int node,
+        int property);
 void update_controller_current_value(struct homie_handle_s *handle, int node,
         int property);
 void update_controller_state(struct homie_handle_s *handle, int node,
         int property);
 
 
-const device_rom_code_t inflow_floor_heating_sensor = "4001144fe10daa28";
+const device_rom_code_t inflow_floor_heating_sensor = CONFIG_inflow_floor_heating_sensor;
+const device_rom_code_t returnflow_floor_heating_sensor = CONFIG_returnflow_floor_heating_sensor;
+const device_rom_code_t inflow_heater_sensor = CONFIG_inflow_heater_sensor;
+const device_rom_code_t returnflow_heater_sensor = CONFIG_returnflow_heater_sensor;
 
 homie_handle_t homie = {
     .deviceid = "heating-controller",
     .devicename = "Heating Controller",
     .update_interval =
         0, /* set to 0 to workaround openhab problem of taking device offline */
-    .num_nodes = 2,
+    .num_nodes = 5,
     .nodes =
         {
             {.id = "inflow-floor-heating",
@@ -87,7 +94,7 @@ homie_handle_t homie = {
                          .read_property_cbk = &update_temperatur_sensor,
                      },
                  }},
-/*            {.id = "returnflow-floor-heating",
+            {.id = "returnflow-floor-heating",
              .name = "Return flow floor heating",
              .type = "ds18b20",
              .num_properties = 1,
@@ -100,7 +107,7 @@ homie_handle_t homie = {
                          .retained = HOMIE_TRUE,
                          .unit = "°C",
                          .datatype = HOMIE_FLOAT,
-                         .user_data = (void *)1,
+                         .user_data = (void *)&returnflow_floor_heating_sensor,
                          .read_property_cbk = &update_temperatur_sensor,
                      },
                  }},
@@ -117,7 +124,7 @@ homie_handle_t homie = {
                          .retained = HOMIE_TRUE,
                          .unit = "°C",
                          .datatype = HOMIE_FLOAT,
-                         .user_data = (void *)2,
+                         .user_data = (void *)inflow_heater_sensor,
                          .read_property_cbk = &update_temperatur_sensor,
                      },
                  }},
@@ -134,14 +141,14 @@ homie_handle_t homie = {
                          .retained = HOMIE_TRUE,
                          .unit = "°C",
                          .datatype = HOMIE_FLOAT,
-                         .user_data = (void *)3,
+                         .user_data = (void *)returnflow_heater_sensor,
                          .read_property_cbk = &update_temperatur_sensor,
                      },
-                 }},*/
+                 }},
 		            {.id = "flow-temperature-controller",
 		             .name = "Flow Temperature Controller",
 		             .type = "3-point-output",
-		             .num_properties = 7,
+		             .num_properties = 8,
 		             .properties =
 		                 {
 		                     {
@@ -211,6 +218,16 @@ homie_handle_t homie = {
 		                         .unit = "enum",
 		                         .datatype = HOMIE_FLOAT,
 		                         .read_property_cbk = &update_controller_state,
+		                     },
+		                     {
+		                         .id = "max-value",
+		                         .name = "Max Value",
+		                         .settable = HOMIE_TRUE,
+		                         .retained = HOMIE_TRUE,
+		                         .unit = "s",
+		                         .datatype = HOMIE_FLOAT,
+		                         .read_property_cbk = &update_controller_max_value,
+		                         .write_property_cbk = &receive_controller_max_value,
 		                     }
 		                 }},
         },
@@ -438,6 +455,22 @@ void update_controller_step_time(struct homie_handle_s *handle, int node,
     sprintf(value, "%.2f", controller->step_time);
     homie_publish_property_value(handle, node, property, value);
 }
+void receive_controller_max_value(struct homie_handle_s *handle, int node,
+        int property, const char *data, int data_len)
+{
+	char tmp[100] = {0};
+	strncpy(tmp, data, data_len);
+	sscanf(tmp, "%f", &controller->max_value);
+	printf("new max value '%.2f'\n", controller->max_value);
+	controller_reset(controller);
+}
+void update_controller_max_value(struct homie_handle_s *handle, int node,
+                              int property)
+{
+    char value[100];
+    sprintf(value, "%.2f", controller->max_value);
+    homie_publish_property_value(handle, node, property, value);
+}
 void update_controller_current_value(struct homie_handle_s *handle, int node,
         int property)
 {
@@ -482,12 +515,12 @@ void app_main(void)
 
     controller = controller_init(temperatureSensors, CONFIG_RELAIS1_GPIO, CONFIG_RELAIS2_GPIO,
     		inflow_floor_heating_sensor,
-			4.0, /* hysteresis */
-			50, /* emergency */
-			140, /* max value */
-			25, /* set point */
-			60, /* reaction time */
-			10 /* step time */
+			CONFIG_controller_hysteresis, /* hysteresis */
+			CONFIG_controller_emergency_value, /* emergency */
+			CONFIG_controller_max_value, /* max value */
+			CONFIG_controller_set_point, /* set point */
+			CONFIG_controller_reaction_time, /* reaction time */
+			CONFIG_controller_step_time /* step time */
 			);
 
     homie.mqtt_client = mqtt_client;
