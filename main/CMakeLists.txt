@@ -1,2 +1,5 @@
-idf_component_register(SRCS "main.cpp temperatureSensors.c homie.c" 
+idf_component_register(SRCS "main.c"
+                            "temperatureSensors.c"
+                            "homie.c"
+                            "controller.c"
                     INCLUDE_DIRS "")

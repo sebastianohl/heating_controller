@@ -26,11 +26,11 @@ void homie_init(homie_handle_t *handle)
     esp_mqtt_client_publish(handle->mqtt_client, buf_topic, buf_value,
                             strlen(buf_value), 1, 1);
     sprintf(buf_topic, "homie/%s/$fw/name", handle->deviceid);
-    sprintf(buf_value, "%s", handle->devicename);
+    sprintf(buf_value, "%s", handle->firmware);
     esp_mqtt_client_publish(handle->mqtt_client, buf_topic, buf_value,
                             strlen(buf_value), 1, 1);
     sprintf(buf_topic, "homie/%s/$fw/version", handle->deviceid);
-    sprintf(buf_value, "0.1");
+    sprintf(buf_value, handle->firmware_version);
     esp_mqtt_client_publish(handle->mqtt_client, buf_topic, buf_value,
                             strlen(buf_value), 1, 1);
     sprintf(buf_topic, "homie/%s/$implementation", handle->deviceid);

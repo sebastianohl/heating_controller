@@ -18,6 +18,9 @@
 #include "temperatureSensors.h"
 #include "controller.h"
 
+#define STR_(X) #X
+#define STR(X) STR_(X)
+
 static EventGroupHandle_t wifi_event_group;
 static EventGroupHandle_t mqtt_event_group;
 
@@ -72,6 +75,8 @@ const device_rom_code_t returnflow_heater_sensor = CONFIG_returnflow_heater_sens
 homie_handle_t homie = {
     .deviceid = "heating-controller",
     .devicename = "Heating Controller",
+	.firmware = "heating-controller",
+	.firmware_version = STR(GIT_BRANCH)" "STR(GIT_COMMIT_HASH),
     .update_interval =
         0, /* set to 0 to workaround openhab problem of taking device offline */
     .num_nodes = 5,

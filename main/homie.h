@@ -51,6 +51,8 @@ struct homie_handle_s
 {
     char deviceid[HOMIE_MAX_STRLEN];
     char devicename[HOMIE_MAX_STRLEN];
+    char firmware[HOMIE_MAX_STRLEN];
+    char firmware_version[HOMIE_MAX_STRLEN];
     char ip[HOMIE_MAX_STRLEN];
     char mac[HOMIE_MAX_STRLEN];
     uint32_t update_interval;

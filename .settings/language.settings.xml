@@ -561,6 +561,108 @@
 						<entry kind="macro" name="UNITY_INCLUDE_CONFIG_H" value="1"/>
 						<entry kind="macro" name="_GNU_SOURCE" value="1"/>
 					</resource>
+					<resource project-relative-path="project_elf_src.c">
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/xtensa/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/xtensa/esp32/include"/>
+						<entry kind="includePath" name="/${ProjName}/config">
+							<flag value="VALUE_WORKSPACE_PATH"/>
+						</entry>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/newlib/platform_include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/freertos/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/heap/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/log/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/soc/esp32/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/soc/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_rom/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_common/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp32/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/driver/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_ringbuf/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_event/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_netif/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/lwip/include/apps"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/lwip/include/apps/sntp"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/lwip/lwip/src/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/lwip/port/esp32/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/lwip/port/esp32/include/arch"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/vfs/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_wifi/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_wifi/esp32/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_eth/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/tcpip_adapter/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/efuse/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/efuse/esp32/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/app_trace/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/mbedtls/port/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/mbedtls/mbedtls/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/wpa_supplicant/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/wpa_supplicant/port/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/wpa_supplicant/include/esp_supplicant"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/bootloader_support/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/app_update/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/spi_flash/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/nvs_flash/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/pthread/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/espcoredump/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/asio/asio/asio/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/asio/port/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/cbor/port/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/coap/port/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/coap/port/include/coap"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/coap/libcoap/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/coap/libcoap/include/coap2"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/console"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/nghttp/port/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/nghttp/nghttp2/lib/includes"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp-tls"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_adc_cal/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_gdbstub/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/tcp_transport/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_http_client/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_http_server/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_https_ota/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/protobuf-c/protobuf-c"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/protocomm/include/common"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/protocomm/include/security"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/protocomm/include/transports"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/mdns/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_local_ctrl/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/esp_websocket_client/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/expat/expat/expat/lib"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/expat/port/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/wear_levelling/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/sdmmc/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/fatfs/diskio"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/fatfs/vfs"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/fatfs/src"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/freemodbus/common/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/idf_test/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/jsmn/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/json/cJSON"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/libsodium/port_include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/mqtt/esp-mqtt/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/openssl/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/perfmon/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/spiffs/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/ulp/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/unity/include"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/unity/unity/src"/>
+						<entry kind="includePath" name="/home/ohli/esp/esp-idf/components/wifi_provisioning/include"/>
+						<entry kind="includePath" name="/${ProjName}/components/esp32-owb/include">
+							<flag value="VALUE_WORKSPACE_PATH"/>
+						</entry>
+						<entry kind="includePath" name="/${ProjName}/components/esp32-ds18b20/include">
+							<flag value="VALUE_WORKSPACE_PATH"/>
+						</entry>
+						<entry kind="macro" name="GIT_BRANCH" value="master"/>
+						<entry kind="macro" name="GIT_COMMIT_HASH" value="6065a3c"/>
+						<entry kind="macro" name="GIT_URL" value="https://github.com/sebastianohl/heating_controller.git"/>
+						<entry kind="macro" name="HAVE_CONFIG_H" value="1"/>
+						<entry kind="macro" name="MBEDTLS_CONFIG_FILE" value="&quot;mbedtls/esp_config.h&quot;"/>
+						<entry kind="macro" name="UNITY_INCLUDE_CONFIG_H" value="1"/>
+						<entry kind="macro" name="WITH_POSIX" value="1"/>
+					</resource>
 					<resource project-relative-path="components/esp32-owb/owb_rmt.c">
 						<entry kind="includePath" name="/${ProjName}/components/esp32-owb/include">
 							<flag value="VALUE_WORKSPACE_PATH"/>
