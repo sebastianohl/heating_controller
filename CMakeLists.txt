@@ -19,7 +19,7 @@ execute_process(
 )
 
 # Get the latest abbreviated commit hash of the working branch
-execute_process(
+execute_process( 
   COMMAND bash -c "echo `git log -1 --format=%h``git diff --quiet || echo '-dirty'`"
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_COMMIT_HASH

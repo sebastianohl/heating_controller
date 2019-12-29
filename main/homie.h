@@ -3,7 +3,7 @@
 
 #include "mqtt_client.h"
 
-#define HOMIE_MAX_STRLEN (50)
+#define HOMIE_MAX_STRLEN (60)
 #define HOMIE_MAX_NODES (5)
 #define HOMIE_MAX_NODES_PROPERTIES (10)
 
