@@ -75,8 +75,8 @@ const device_rom_code_t returnflow_heater_sensor = CONFIG_returnflow_heater_sens
 homie_handle_t homie = {
     .deviceid = "heating-controller",
     .devicename = "Heating Controller",
-	.firmware = "heating-controller",
-	.firmware_version = STR(GIT_BRANCH)" "STR(GIT_COMMIT_HASH),
+	.firmware = GIT_URL"\0",
+	.firmware_version = GIT_BRANCH" "GIT_COMMIT_HASH,
     .update_interval =
         0, /* set to 0 to workaround openhab problem of taking device offline */
     .num_nodes = 5,

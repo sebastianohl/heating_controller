@@ -20,15 +20,15 @@ execute_process(
 
 # Get the latest abbreviated commit hash of the working branch
 execute_process(
-  COMMAND git log -1 --format=%h
+  COMMAND bash -c "echo `git log -1 --format=%h``git diff --quiet || echo '-dirty'`"
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_COMMIT_HASH
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-add_definitions("-DGIT_COMMIT_HASH=${GIT_COMMIT_HASH}")
-add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")
-add_definitions("-DGIT_URL=${GIT_URL}")
+add_definitions("-DGIT_COMMIT_HASH=\"${GIT_COMMIT_HASH}\"")
+add_definitions("-DGIT_BRANCH=\"${GIT_BRANCH}\"")
+add_definitions("-DGIT_URL=\"${GIT_URL}\"")
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(heating_controller)

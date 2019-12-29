@@ -655,9 +655,9 @@
 						<entry kind="includePath" name="/${ProjName}/components/esp32-ds18b20/include">
 							<flag value="VALUE_WORKSPACE_PATH"/>
 						</entry>
-						<entry kind="macro" name="GIT_BRANCH" value="master"/>
-						<entry kind="macro" name="GIT_COMMIT_HASH" value="6065a3c"/>
-						<entry kind="macro" name="GIT_URL" value="https://github.com/sebastianohl/heating_controller.git"/>
+						<entry kind="macro" name="GIT_BRANCH" value="&quot;master&quot;"/>
+						<entry kind="macro" name="GIT_COMMIT_HASH" value="&quot;512f0ed-dirty&quot;"/>
+						<entry kind="macro" name="GIT_URL" value="&quot;https://github.com/sebastianohl/heating_controller.git&quot;"/>
 						<entry kind="macro" name="HAVE_CONFIG_H" value="1"/>
 						<entry kind="macro" name="MBEDTLS_CONFIG_FILE" value="&quot;mbedtls/esp_config.h&quot;"/>
 						<entry kind="macro" name="UNITY_INCLUDE_CONFIG_H" value="1"/>
