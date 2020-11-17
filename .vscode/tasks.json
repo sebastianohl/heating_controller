@@ -1,0 +1,109 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: build",
+            "command": "make",
+            "args": [
+                "all",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "IDF_PATH": "${workspaceFolder}/../esp-idf/",
+                    "ESPBAUD": "921600",
+                    "ESPPORT": "/dev/ttyUSB0",
+                    "python": "python3",
+                    "PATH": "~/.espressif/tools/xtensa-esp32-elf/esp-2019r2-8.2.0/xtensa-esp32-elf/bin:~/.espressif/tools/xtensa-esp32s2-elf/esp-2019r2-8.2.0/xtensa-esp32s2-elf/bin:~/.espressif/tools/esp32ulp-elf/2.28.51.20170517/esp32ulp-elf-binutils/bin:~/.espressif/tools/cmake/3.13.4/bin:~/.espressif/tools/openocd-esp32/v0.10.0-esp32-20190708/openocd-esp32/bin:~/.espressif/tools/ninja/1.9.0/:${workspaceFolder}/../esp-idf/tools:${workspaceFolder}/../esp-idf/components/esptool_py/esptool:${workspaceFolder}/../esp-idf/components/espcoredump:${workspaceFolder}/../esp-idf/components/partition_table/:${env:PATH}",
+                    "OPENOCD_SCRIPTS": "~/.espressif/tools/openocd-esp32/v0.10.0-esp32-20190708/openocd-esp32/share/openocd/scripts",
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: clean",
+            "command": "make",
+            "args": [
+                "clean",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "IDF_PATH": "${workspaceFolder}/../esp-idf/",
+                    "ESPBAUD": "921600",
+                    "ESPPORT": "/dev/ttyUSB0",
+                    "python": "python3",
+                    "PATH": "~/.espressif/tools/xtensa-esp32-elf/esp-2019r2-8.2.0/xtensa-esp32-elf/bin:~/.espressif/tools/xtensa-esp32s2-elf/esp-2019r2-8.2.0/xtensa-esp32s2-elf/bin:~/.espressif/tools/esp32ulp-elf/2.28.51.20170517/esp32ulp-elf-binutils/bin:~/.espressif/tools/cmake/3.13.4/bin:~/.espressif/tools/openocd-esp32/v0.10.0-esp32-20190708/openocd-esp32/bin:~/.espressif/tools/ninja/1.9.0/:${workspaceFolder}/../esp-idf/tools:${workspaceFolder}/../esp-idf/components/esptool_py/esptool:${workspaceFolder}/../esp-idf/components/espcoredump:${workspaceFolder}/../esp-idf/components/partition_table/:${env:PATH}",
+                    "OPENOCD_SCRIPTS": "~/.espressif/tools/openocd-esp32/v0.10.0-esp32-20190708/openocd-esp32/share/openocd/scripts",
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: flash",
+            "command": "make",
+            "args": [
+                "flash",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "IDF_PATH": "${workspaceFolder}/../esp-idf/",
+                    "ESPBAUD": "921600",
+                    "ESPPORT": "/dev/ttyUSB0",
+                    "python": "python3",
+                    "PATH": "~/.espressif/tools/xtensa-esp32-elf/esp-2019r2-8.2.0/xtensa-esp32-elf/bin:~/.espressif/tools/xtensa-esp32s2-elf/esp-2019r2-8.2.0/xtensa-esp32s2-elf/bin:~/.espressif/tools/esp32ulp-elf/2.28.51.20170517/esp32ulp-elf-binutils/bin:~/.espressif/tools/cmake/3.13.4/bin:~/.espressif/tools/openocd-esp32/v0.10.0-esp32-20190708/openocd-esp32/bin:~/.espressif/tools/ninja/1.9.0/:${workspaceFolder}/../esp-idf/tools:${workspaceFolder}/../esp-idf/components/esptool_py/esptool:${workspaceFolder}/../esp-idf/components/espcoredump:${workspaceFolder}/../esp-idf/components/partition_table/:${env:PATH}",
+                    "OPENOCD_SCRIPTS": "~/.espressif/tools/openocd-esp32/v0.10.0-esp32-20190708/openocd-esp32/share/openocd/scripts",
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: cmake",
+            "command": "cmake",
+            "args": [
+                "CMakeLists.txt",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "IDF_PATH": "${workspaceFolder}/../esp-idf/",
+                    "ESPBAUD": "921600",
+                    "ESPPORT": "/dev/ttyUSB0",
+                    "python": "python3",
+                    "PATH": "~/.espressif/tools/xtensa-esp32-elf/esp-2019r2-8.2.0/xtensa-esp32-elf/bin:~/.espressif/tools/xtensa-esp32s2-elf/esp-2019r2-8.2.0/xtensa-esp32s2-elf/bin:~/.espressif/tools/esp32ulp-elf/2.28.51.20170517/esp32ulp-elf-binutils/bin:~/.espressif/tools/cmake/3.13.4/bin:~/.espressif/tools/openocd-esp32/v0.10.0-esp32-20190708/openocd-esp32/bin:~/.espressif/tools/ninja/1.9.0/:${workspaceFolder}/../esp-idf/tools:${workspaceFolder}/../esp-idf/components/esptool_py/esptool:${workspaceFolder}/../esp-idf/components/espcoredump:${workspaceFolder}/../esp-idf/components/partition_table/:${env:PATH}",
+                    "OPENOCD_SCRIPTS": "~/.espressif/tools/openocd-esp32/v0.10.0-esp32-20190708/openocd-esp32/share/openocd/scripts",
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
