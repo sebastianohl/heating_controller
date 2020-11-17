@@ -33,6 +33,12 @@ temperatureSensors_handle *temperatureSensors_init()
     }
 
     printf("Found %d devices\n", handle->num_devices);
+    if (handle->num_devices == 0)
+    {
+        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        printf("!!!!!!! NO TEMPERATURE SENSOR FOUND !!!!!!!!!\n");
+        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    }
 
     // Create DS18B20 devices on the 1-Wire bus
     for (int i = 0; i < handle->num_devices; ++i)
@@ -54,30 +60,56 @@ temperatureSensors_handle *temperatureSensors_init()
 
 void temperatureSensors_trigger_read(temperatureSensors_handle *handle)
 {
-    assert(handle->num_devices > 0);
-    ds18b20_convert_all(handle->owb);
-    ds18b20_wait_for_conversion(handle->devices[0].info);
+    if (handle->num_devices == 0)
+    {
+        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        printf("!!!!!!! NO TEMPERATURE SENSOR FOUND !!!!!!!!!\n");
+        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    }
+    else
+    {
+        assert(handle->num_devices > 0);
+        ds18b20_convert_all(handle->owb);
+        ds18b20_wait_for_conversion(handle->devices[0].info);
+    }
 }
 
 float temperatureSensors_read_temperature_idx(temperatureSensors_handle *handle,
-                                          uint8_t sensor)
+                                              uint8_t sensor)
 {
-    assert(sensor < handle->num_devices);
-    float temp = 42;
-    ds18b20_read_temp(handle->devices[sensor].info, &temp);
+    if (handle->num_devices == 0)
+    {
+        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        printf("!!!!!!! NO TEMPERATURE SENSOR FOUND !!!!!!!!!\n");
+        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    }
+    else
+    {
+        if (sensor >= handle->num_devices)
+        {
+            printf("unable to read unknown sensor idx %d\n", sensor);
+        }
+        else
+        {
+            float temp = 42;
+            ds18b20_read_temp(handle->devices[sensor].info, &temp);
 
-    return temp;
+            return temp;
+        }
+    }
+    return 666;
 }
 
 float temperatureSensors_read_temperature_str(temperatureSensors_handle *handle,
-                                          device_rom_code_t sensor)
+                                              device_rom_code_t sensor)
 {
-	for (int i = 0; i < handle->num_devices; ++i)
-	{
-		if (strcmp(handle->devices[i].device_rom_code_str, sensor) == 0)
-		{
-			return temperatureSensors_read_temperature_idx(handle, i);
-		}
-	}
-	return 666;
+    for (int i = 0; i < handle->num_devices; ++i)
+    {
+        if (strcmp(handle->devices[i].device_rom_code_str, sensor) == 0)
+        {
+            return temperatureSensors_read_temperature_idx(handle, i);
+        }
+    }
+    printf("unable to read temperature from sensor %s\n", sensor);
+    return 666;
 }
