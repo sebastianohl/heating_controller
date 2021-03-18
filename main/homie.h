@@ -4,7 +4,7 @@
 #include "mqtt_client.h"
 
 #define HOMIE_MAX_STRLEN (60)
-#define HOMIE_MAX_NODES (5)
+#define HOMIE_MAX_NODES (6)
 #define HOMIE_MAX_NODES_PROPERTIES (10)
 
 #define HOMIE_TRUE (1)
@@ -31,9 +31,9 @@ struct homie_node_property_s
     homie_node_property_type_t datatype;
     void *user_data;
     void (*read_property_cbk)(struct homie_handle_s *handle, int node,
-                                int property);
+                              int property);
     void (*write_property_cbk)(struct homie_handle_s *handle, int node,
-                                int property, const char *data, int data_len);
+                               int property, const char *data, int data_len);
 };
 typedef struct homie_node_property_s homie_node_property_t;
 
@@ -65,7 +65,8 @@ typedef struct homie_handle_s homie_handle_t;
 
 void homie_init(homie_handle_t *handle);
 void homie_cycle(homie_handle_t *handle);
-void homie_handle_mqtt_incoming_event(homie_handle_t *handle, esp_mqtt_event_handle_t event);
+void homie_handle_mqtt_incoming_event(homie_handle_t *handle,
+                                      esp_mqtt_event_handle_t event);
 void homie_publish_property_value(homie_handle_t *handle, int node,
                                   int property, const char *value);
 
