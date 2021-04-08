@@ -2,6 +2,26 @@
     "tasks": [
         {
             "type": "shell",
+            "label": "C/C++: openocd",
+            "command": "openocd",
+            "args": [
+                "-f",
+                "${env:OPENOCD_SCRIPTS}/interface/ftdi/esp32_devkitj_v1.cfg",
+                "-f",
+                "${env:OPENOCD_SCRIPTS}/board/esp32-wrover-kit-3.3v.cfg"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {}
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
             "label": "C/C++: build",
             "command": "make",
             "args": [
@@ -9,8 +29,7 @@
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
-                "env": {
-                }
+                "env": {}
             },
             "problemMatcher": [
                 "$gcc"
@@ -29,8 +48,7 @@
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
-                "env": {
-                }
+                "env": {}
             },
             "problemMatcher": [
                 "$gcc"
@@ -49,8 +67,7 @@
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
-                "env": {
-                }
+                "env": {}
             },
             "problemMatcher": [
                 "$gcc"
@@ -69,8 +86,7 @@
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
-                "env": {
-                }
+                "env": {}
             },
             "problemMatcher": [
                 "$gcc"

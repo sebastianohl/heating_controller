@@ -12,5 +12,7 @@ RUN cd /esp && git clone --recursive https://github.com/espressif/esp-idf.git
 RUN su - vscode -c "cd /esp/esp-idf && ./install.sh"
 RUN echo ". /esp/esp-idf/export.sh" >> /home/vscode/.profile
 
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y libpython2.7 usbutils
+
 
 

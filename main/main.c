@@ -16,6 +16,7 @@
 
 #include "ota.h"
 #include "mqtt_client.h"
+#include "remote_log.h"
 
 #include "heating_controller.h"
 
@@ -252,10 +253,10 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
         ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
         break;
     case MQTT_EVENT_PUBLISHED:
-        ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
+        ESP_LOGD(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
         break;
     case MQTT_EVENT_DATA:
-        ESP_LOGI(TAG, "MQTT_EVENT_DATA");
+        ESP_LOGD(TAG, "MQTT_EVENT_DATA, topic %*.s", event->topic_len, event->topic);
         printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
         printf("DATA='%.*s'\r\n", event->data_len, event->data);
         printf("ID=%d, total_len=%d, data_len=%d, current_data_offset=%d\n",
@@ -266,10 +267,10 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 
         break;
     case MQTT_EVENT_ERROR:
-        ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
+        ESP_LOGE(TAG, "MQTT_EVENT_ERROR");
         break;
     default:
-        ESP_LOGI(TAG, "Other event id:%d", event->event_id);
+        ESP_LOGD(TAG, "Other event id:%d", event->event_id);
         break;
     }
     return ESP_OK;
@@ -286,11 +287,12 @@ static void mqtt_app_start(void)
         .uri = uri,
     };
     xEventGroupClearBits(mqtt_event_group, MQTT_CONNECTED_BIT);
-
+    xEventGroupClearBits(mqtt_event_group, MQTT_NEW_CONNECT_BIT);
+ 
     ESP_LOGI(TAG, "connect to mqtt uri %s", uri);
-    ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
+    ESP_LOGD(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
     mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
-    ESP_LOGI(TAG, "Note free memory: %d bytes", esp_get_free_heap_size());
+    ESP_LOGD(TAG, "Note free memory: %d bytes", esp_get_free_heap_size());
 }
 
 static void event_handler(void *arg, esp_event_base_t event_base,
@@ -311,11 +313,11 @@ static void event_handler(void *arg, esp_event_base_t event_base,
     else if (event_base == WIFI_EVENT &&
              event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
+        stop_remote_log();
         esp_mqtt_client_stop(mqtt_client);
 
         xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
         esp_wifi_connect();
-        xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
         wifi_retry_count++;
         ESP_LOGI(TAG, "retry to connect to the AP");
         if (wifi_retry_count > 10)
@@ -327,6 +329,8 @@ static void event_handler(void *arg, esp_event_base_t event_base,
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
     {
+        start_remote_log(CONFIG_REMOTELOG_UDP_HOST, CONFIG_REMOTELOG_UDP_PORT,
+            CONFIG_REMOTELOG_SYSLOG_HOST, CONFIG_REMOTELOG_SYSLOG_PORT, CONFIG_REMOTELOG_SYSLOG_APP);
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
         ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
         snprintf(homie.ip, sizeof(homie.ip), "%d.%d.%d.%d",
@@ -405,6 +409,7 @@ void start_ota(struct homie_handle_s *handle, int node, int property, const char
 
 void app_main(void)
 {
+    esp_log_level_set(TAG,ESP_LOG_VERBOSE);
     printf("starting....\n");
     // Initialize NVS
     esp_err_t ret = nvs_flash_init();
@@ -444,11 +449,11 @@ void app_main(void)
     for (int i = 24 * 60 * 60 / 5; i >= 0; i--)
     {
         EventBits_t uxBits;
-        ESP_LOGI(TAG, "Restarting in %d seconds...\n", i * 5);
+        ESP_LOGD(TAG, "Restarting in %d seconds...\n", i * 5);
 
         homie.uptime += 5;
 
-        ESP_LOGI(TAG, "test for mqtt new connect");
+        ESP_LOGD(TAG, "test for mqtt new connect");
         uxBits = xEventGroupWaitBits(mqtt_event_group, MQTT_NEW_CONNECT_BIT, true,
                                      false, 1);
         if ((uxBits & MQTT_NEW_CONNECT_BIT) != 0)

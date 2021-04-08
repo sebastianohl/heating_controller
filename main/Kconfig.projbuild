@@ -72,4 +72,17 @@ config controller_step_time
 	int "Controller Step Time (s)"
 	default 10
 
+config REMOTELOG_UDP_HOST
+    string "Remote Log UDP hostname"
+config REMOTELOG_UDP_PORT
+    int "Remote Log UDP Port"
+    default 12345
+config REMOTELOG_SYSLOG_HOST
+    string "Remote Log Syslog hostname"
+config REMOTELOG_SYSLOG_PORT
+    int "Remote Log Syslog Port"
+    default 514
+config REMOTELOG_SYSLOG_APP
+    string "Remote Log Syslog application"
+    default "heating-controller"
 endmenu
