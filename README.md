@@ -18,5 +18,14 @@ Configuration:
 
 Software:
 * ESP-IDF Package
-* Eclipse (or any other IDE)
+* vscode (or any other IDE)
+
+JTAG Debugging:
+use a adapter FTDI 2232HL board.
+Connect the pins as following:
+* GPIO12 — AD1 (TDI)
+* GPIO15 — AD2 (TDO)
+* GPIO13 — AD0 (TCK)
+* GPIO14 — AD3 (TMS)
+* GND — GND
 
