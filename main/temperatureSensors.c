@@ -1,6 +1,10 @@
 #include "temperatureSensors.h"
 
 #include <string.h>
+#include "esp_log.h"
+#include "esp_system.h"
+
+static const char *TAG = "controller";
 
 temperatureSensors_handle *temperatureSensors_init()
 {
@@ -14,7 +18,7 @@ temperatureSensors_handle *temperatureSensors_init()
     owb_use_crc(handle->owb, true); // enable CRC check for ROM code
 
     // Find all connected devices
-    printf("Find devices:\n");
+    ESP_LOGI(TAG,"Find devices:");
     OneWireBus_SearchState search_state = {0};
     bool found = false;
     owb_search_first(handle->owb, &search_state, &found);
@@ -24,7 +28,7 @@ temperatureSensors_handle *temperatureSensors_init()
             search_state.rom_code,
             handle->devices[handle->num_devices].device_rom_code_str,
             sizeof(handle->devices[handle->num_devices].device_rom_code_str));
-        printf("  %d : %s\n", handle->num_devices,
+        ESP_LOGI(TAG,"  %d : %s", handle->num_devices,
                handle->devices[handle->num_devices].device_rom_code_str);
         handle->devices[handle->num_devices].device_rom_code =
             search_state.rom_code;
@@ -32,12 +36,12 @@ temperatureSensors_handle *temperatureSensors_init()
         owb_search_next(handle->owb, &search_state, &found);
     }
 
-    printf("Found %d devices\n", handle->num_devices);
+    ESP_LOGI(TAG,"Found %d devices", handle->num_devices);
     if (handle->num_devices == 0)
     {
-        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-        printf("!!!!!!! NO TEMPERATURE SENSOR FOUND !!!!!!!!!\n");
-        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        ESP_LOGE(TAG,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        ESP_LOGE(TAG,"!!!!!!! NO TEMPERATURE SENSOR FOUND !!!!!!!!!");
+        ESP_LOGE(TAG,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 
     // Create DS18B20 devices on the 1-Wire bus
@@ -62,9 +66,9 @@ void temperatureSensors_trigger_read(temperatureSensors_handle *handle)
 {
     if (handle->num_devices == 0)
     {
-        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-        printf("!!!!!!! NO TEMPERATURE SENSOR FOUND !!!!!!!!!\n");
-        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        ESP_LOGE(TAG,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        ESP_LOGE(TAG,"!!!!!!! NO TEMPERATURE SENSOR FOUND !!!!!!!!!");
+        ESP_LOGE(TAG,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
     else
     {
@@ -79,15 +83,15 @@ float temperatureSensors_read_temperature_idx(temperatureSensors_handle *handle,
 {
     if (handle->num_devices == 0)
     {
-        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-        printf("!!!!!!! NO TEMPERATURE SENSOR FOUND !!!!!!!!!\n");
-        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        ESP_LOGE(TAG,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        ESP_LOGE(TAG,"!!!!!!! NO TEMPERATURE SENSOR FOUND !!!!!!!!!");
+        ESP_LOGE(TAG,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
     else
     {
         if (sensor >= handle->num_devices)
         {
-            printf("unable to read unknown sensor idx %d\n", sensor);
+            ESP_LOGE(TAG,"unable to read unknown sensor idx %d", sensor);
         }
         else
         {
@@ -97,7 +101,7 @@ float temperatureSensors_read_temperature_idx(temperatureSensors_handle *handle,
             return temp;
         }
     }
-    return 666;
+    return 100;
 }
 
 float temperatureSensors_read_temperature_str(temperatureSensors_handle *handle,
@@ -110,6 +114,6 @@ float temperatureSensors_read_temperature_str(temperatureSensors_handle *handle,
             return temperatureSensors_read_temperature_idx(handle, i);
         }
     }
-    printf("unable to read temperature from sensor %s\n", sensor);
-    return 666;
+    ESP_LOGE(TAG,"unable to read temperature from sensor %s", sensor);
+    return 101;
 }

@@ -9,6 +9,9 @@
 #include <string.h>
 #include <math.h>
 #include "freertos/task.h"
+#include "esp_log.h"
+
+static const char *TAG = "controller";
 
 void controller_keep_flow(controller_handle_t *handle)
 {
@@ -16,7 +19,7 @@ void controller_keep_flow(controller_handle_t *handle)
     gpio_set_level(handle->close_flow_pin, 1);
 
     handle->state = CONTROLLER_KEEPFLOW;
-    printf ("keep flow\n");
+    ESP_LOGI(TAG,"keep flow");
 }
 
 void controller_close_flow(controller_handle_t *handle)
@@ -30,7 +33,7 @@ void controller_close_flow(controller_handle_t *handle)
     gpio_set_level(handle->close_flow_pin, 0);
 
     handle->state = CONTROLLER_CLOSEFLOW;
-    printf ("close flow\n");
+    ESP_LOGI(TAG,"close flow");
 }
 
 void controller_open_flow(controller_handle_t *handle)
@@ -45,7 +48,7 @@ void controller_open_flow(controller_handle_t *handle)
     gpio_set_level(handle->close_flow_pin, 1);
 
     handle->state = CONTROLLER_OPENFLOW;
-    printf ("open flow\n");
+    ESP_LOGI(TAG,"open flow");
 }
 
 void controller_reset(controller_handle_t *handle)
@@ -54,7 +57,7 @@ void controller_reset(controller_handle_t *handle)
 
 	handle->state = CONTROLLER_RESET;
 	handle->current_value = handle->max_value;
-	printf("controller reset\n");
+	ESP_LOGI(TAG,"controller reset");
 }
 
 controller_handle_t * controller_init(temperatureSensors_handle *temperatureSensors, uint8_t open_flow_pin,
@@ -92,20 +95,20 @@ void controller_cycle(controller_handle_t *handle)
 {
 	controller_state_t lastState = handle->state;
 	float currentTemp = temperatureSensors_read_temperature_str(handle->temperatureSensors, handle->inflow_sensor);
-	printf ("current temp %f\n", currentTemp);
-	printf ("current state %d\n", handle->state);
-	printf ("current setpoint %.2f\n", handle->setpoint);
+	ESP_LOGI(TAG,"current temp %f", currentTemp);
+	ESP_LOGI(TAG,"current state %d", handle->state);
+	ESP_LOGI(TAG,"current setpoint %.2f", handle->setpoint);
 
 	if ((xTaskGetTickCount() * portTICK_PERIOD_MS) < handle->last_cycle) /* timer wrap ignore one cycle*/
 	{
-		printf("timer wrap\n");
+		ESP_LOGI(TAG,"timer wrap");
 		handle->last_cycle = xTaskGetTickCount() * portTICK_PERIOD_MS;
 		handle->last_state_change = handle->last_cycle;
 		return;
 	}
 
 	float timeSinceLast = (xTaskGetTickCount() * portTICK_PERIOD_MS)-handle->last_cycle;
-	printf("time since last cycle %f\n", timeSinceLast);
+	ESP_LOGI(TAG,"time since last cycle %f", timeSinceLast);
 	switch (handle->state)
 	{
 	case CONTROLLER_CLOSEFLOW: handle->current_value -= (float)timeSinceLast / 1000.0; break;
@@ -120,10 +123,10 @@ void controller_cycle(controller_handle_t *handle)
 
 	handle->current_value = fmin(fmax(handle->current_value, 0), handle->max_value);
 
-	printf("current value %f\n", handle->current_value);
+	ESP_LOGI(TAG,"current value %f", handle->current_value);
 	handle->last_cycle = xTaskGetTickCount() * portTICK_PERIOD_MS;
 
-	printf("last state change %d\n", handle->last_cycle-handle->last_state_change);
+	ESP_LOGI(TAG,"last state change %d", handle->last_cycle-handle->last_state_change);
 
 	if (currentTemp > handle->emergency)
 	{
@@ -147,7 +150,7 @@ void controller_cycle(controller_handle_t *handle)
 
 	if (handle->last_cycle-handle->last_state_change > handle->reaction_time*1000)
 	{
-		printf("error value %f <=> %f\n", currentTemp-handle->setpoint, handle->hysteresis);
+		ESP_LOGI(TAG,"error value %f <=> %f", currentTemp-handle->setpoint, handle->hysteresis);
 		float error_value = currentTemp-handle->setpoint;
 		if (fabs(error_value) > handle->hysteresis)
 		{
