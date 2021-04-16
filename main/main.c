@@ -268,6 +268,10 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
         break;
     case MQTT_EVENT_ERROR:
         ESP_LOGE(TAG, "MQTT_EVENT_ERROR");
+        ESP_LOGI(TAG, "->reset");
+        fflush(stdout);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        esp_restart();
         break;
     default:
         ESP_LOGD(TAG, "Other event id:%d", event->event_id);
