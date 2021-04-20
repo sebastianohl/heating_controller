@@ -8,7 +8,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
 RUN mkdir -p /esp
-RUN cd /esp && git clone --recursive https://github.com/espressif/esp-idf.git
+RUN cd /esp && git clone -b v4.1.1 --recursive https://github.com/espressif/esp-idf.git 
 RUN su - vscode -c "cd /esp/esp-idf && ./install.sh"
 RUN echo ". /esp/esp-idf/export.sh" >> /home/vscode/.profile
 
