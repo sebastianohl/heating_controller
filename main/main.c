@@ -269,6 +269,8 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
     case MQTT_EVENT_ERROR:
         ESP_LOGE(TAG, "MQTT_EVENT_ERROR");
         ESP_LOGI(TAG, "->reset");
+        stop_remote_log();
+        esp_wifi_stop();
         fflush(stdout);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
         esp_restart();
@@ -403,6 +405,9 @@ void start_ota(struct homie_handle_s *handle, int node, int property, const char
         if (ret == ESP_OK)
         {
             ESP_LOGI(TAG, "reset to start new image");
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            stop_remote_log();
+            esp_wifi_stop();
             fflush(stdout);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
             esp_restart();
@@ -481,6 +486,8 @@ void app_main(void)
         vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
     printf("Restarting now.\n");
+    stop_remote_log();
+    esp_wifi_stop();
     fflush(stdout);
     esp_restart();
 }
