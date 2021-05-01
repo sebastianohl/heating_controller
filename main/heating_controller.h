@@ -1,12 +1,15 @@
 #ifndef _HEATING_CONTROLLER_H_
 #define HEATIME_CONTROLLER_H_
 
+#include "controller.h"
 #include "homie.h"
 #include "temperatureSensors.h"
-#include "controller.h"
 
 temperatureSensors_handle *temperatureSensors;
 controller_handle_t *controller;
+
+void init_controller_params();
+void write_controller_params();
 
 void update_temperatur_sensor(struct homie_handle_s *handle, int node,
                               int property);

@@ -34,6 +34,8 @@ const static int MQTT_CONNECTED_BIT = BIT1;
 
 void start_ota(struct homie_handle_s *handle, int node,
                                 int property, const char *data, int data_len);
+void reset_uc(struct homie_handle_s *handle, int node,
+                                int property, const char *data, int data_len);
 const device_rom_code_t inflow_floor_heating_sensor =
     CONFIG_inflow_floor_heating_sensor;
 const device_rom_code_t returnflow_floor_heating_sensor =
@@ -55,7 +57,7 @@ homie_handle_t homie = {
             {.id = "system",
              .name = "System",
              .type = "esp32",
-             .num_properties = 1,
+             .num_properties = 2,
              .properties =
                  {
                        {
@@ -67,6 +69,17 @@ homie_handle_t homie = {
                            .datatype = HOMIE_BOOL,
                            .read_property_cbk = NULL,
                            .write_property_cbk = &start_ota,
+                           .user_data = NULL,
+                       },
+                       {
+                           .id = "reset",
+                           .name = "reset",
+                           .settable = HOMIE_TRUE,
+                           .retained = HOMIE_TRUE,
+                           .unit = " ",
+                           .datatype = HOMIE_BOOL,
+                           .read_property_cbk = NULL,
+                           .write_property_cbk = &reset_uc,
                            .user_data = NULL,
                        },
                  }},
@@ -416,6 +429,22 @@ void start_ota(struct homie_handle_s *handle, int node, int property, const char
     }
 }
 
+void reset_uc(struct homie_handle_s *handle, int node, int property, const char *data, int data_len)
+{
+    char buf_topic[255] = {0};
+    // reset to prevent inifinte update loop
+    sprintf(buf_topic, "homie/%s/%s/reset/set", homie.deviceid, homie.nodes[0].id);
+    esp_mqtt_client_publish(homie.mqtt_client, buf_topic, "",
+                        0, 1, HOMIE_TRUE);
+    ESP_LOGI(TAG, "reset uC");
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    stop_remote_log();
+    esp_wifi_stop();
+    fflush(stdout);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    esp_restart();
+}
+
 void app_main(void)
 {
     esp_log_level_set(TAG,ESP_LOG_VERBOSE);
@@ -446,6 +475,8 @@ void app_main(void)
                         CONFIG_controller_reaction_time,   /* reaction time */
                         CONFIG_controller_step_time        /* step time */
         );
+
+    init_controller_params();
 
     const esp_partition_t* current_partition = esp_ota_get_running_partition();
     strncpy(homie.firmware, current_partition->label, sizeof(homie.firmware));
